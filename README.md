@@ -33,27 +33,16 @@ flowchart TD
 ---
 
 ## Project Structure
-SecureZone-Real-Time-Monitoring/
-│
-├── backend.py
-│ ├── BackendEngine load model, run process_frame() per frame
-│ ├── TelegramAlerter non-blocking threaded Bot API sender with cooldown
-│ ├── Detection bbox · confidence · mask contour · in_zone flag
-│ ├── FrameResult result struct returned to frontend each frame
-│ ├── point_in_polygon() ray-casting point-in-polygon test
-│ ├── mask_overlaps_zone() check mask contour points against zone polygon
-│ └── bbox_overlaps_zone() fallback: foot-point + four-corner check
-│
-├── frontend.py
-│ ├── AppState thread-safe shared state (zone, alerts, FPS, log)
-│ ├── camera_loop() daemon thread: read → infer → draw → encode → stream
-│ └── Flask routes / /video_feed /add_point /close_zone
-│ /reset_zone /screenshot /status
-│
-└── README.md
 
+| File | Responsibility |
+|---|---|
+| `backend.py` | YOLOv8n-seg inference, zone geometry, Telegram alerts |
+| `frontend.py` | Flask MJPEG stream, browser UI, zone drawing |
+| `README.md` | Documentation |
 
----
+**backend.py** exposes `BackendEngine.process_frame(frame, zone)` which returns a `FrameResult` containing detections, alert state, and persist count. Key internals: `TelegramAlerter` (non-blocking threaded sender), `point_in_polygon()` (ray-casting), `mask_overlaps_zone()` (mask contour check), `bbox_overlaps_zone()` (foot-point fallback).
+
+**frontend.py** runs a daemon `camera_loop()` thread that reads frames, calls the backend, draws overlays, and encodes JPEG. Flask routes: `/` (UI), `/video_feed` (MJPEG), `/add_point`, `/close_zone`, `/reset_zone`, `/screenshot`, `/status`.
 
 ## Hardware & Software
 
