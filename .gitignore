@@ -1,0 +1,10 @@
+__pycache__/
+*.pyc
+*.pyo
+*.pt
+*.engine
+screenshots/
+*.jpg
+*.png
+*.mp4
+.env
